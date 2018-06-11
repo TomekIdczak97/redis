@@ -74,7 +74,7 @@ geoPoint *geoArrayAppend(geoArray *ga) {
 /* Destroy a geoArray created with geoArrayCreate(). */
 void geoArrayFree(geoArray *ga) {
     size_t i;
-    for (i = 0; i < ga->used; i++) sdsfree(ga->array[i].member);
+    for (i = 0; i < ga->used; i++) sdsfreeM(ga->array[i].member);
     zfree(ga->array);
     zfree(ga);
 }
@@ -252,10 +252,10 @@ int geoGetPointsInRange(robj *zobj, double min, double max, double lon, double l
 
             /* We know the element exists. ziplistGet should always succeed */
             ziplistGet(eptr, &vstr, &vlen, &vlong);
-            member = (vstr == NULL) ? sdsfromlonglong(vlong) :
-                                      sdsnewlen(vstr,vlen);
+            member = (vstr == NULL) ? sdsfromlonglongM(vlong) :
+                                      sdsnewlenM(vstr,vlen);
             if (geoAppendIfWithinRadius(ga,lon,lat,radius,score,member)
-                == C_ERR) sdsfree(member);
+                == C_ERR) sdsfreeM(member);
             zzlNext(zl, &eptr, &sptr);
         }
     } else if (zobj->encoding == OBJ_ENCODING_SKIPLIST) {
@@ -274,9 +274,9 @@ int geoGetPointsInRange(robj *zobj, double min, double max, double lon, double l
             if (!zslValueLteMax(ln->score, &range))
                 break;
 
-            ele = sdsdup(ele);
+            ele = sdsdupM(ele);
             if (geoAppendIfWithinRadius(ga,lon,lat,radius,ln->score,ele)
-                == C_ERR) sdsfree(ele);
+                == C_ERR) sdsfreeM(ele);
             ln = ln->level[0].forward;
         }
     }
@@ -436,7 +436,7 @@ void geoaddCommand(client *c) {
         GeoHashBits hash;
         geohashEncodeWGS84(xy[0], xy[1], GEO_STEP_MAX, &hash);
         GeoHashFix52Bits bits = geohashAlign52Bits(hash);
-        robj *score = createObject(OBJ_STRING, sdsfromlonglong(bits));
+        robj *score = createObject(OBJ_STRING, sdsfromlonglongM(bits));
         robj *val = c->argv[2 + i * 3 + 2];
         argv[2+i*2] = score;
         argv[3+i*2] = val;

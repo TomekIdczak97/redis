@@ -227,6 +227,7 @@ static inline sds sdsdup(const sds s) { return sdsdupA(s, s_alloc); }
 static inline sds sdsdupM(const sds s) { return sdsdupA(s, m_alloc); }
 void sdsfreeA(sds s, alloc a);
 static inline void sdsfree(sds s) { sdsfreeA(s, s_alloc); }
+static inline void sdsfreeM(sds s) { sdsfreeA(s, m_alloc); }
 sds sdsgrowzeroA(sds s, size_t len, alloc a);
 static inline sds sdsgrowzero(sds s, size_t len) { return sdsgrowzeroA(s,len,s_alloc); }
 static inline sds sdsgrowzeroM(sds s, size_t len) { return sdsgrowzeroA(s,len,m_alloc); }
@@ -258,6 +259,7 @@ void sdstolower(sds s);
 void sdstoupper(sds s);
 sds sdsfromlonglongA(long long value, alloc a);
 static inline sds sdsfromlonglong(long long value) { return sdsfromlonglongA(value, s_alloc); }
+static inline sds sdsfromlonglongM(long long value) { return sdsfromlonglongA(value, m_alloc); }
 sds sdscatrepr(sds s, const char *p, size_t len);
 sds *sdssplitargs(const char *line, int *argc);
 sds sdsmapchars(sds s, const char *from, const char *to, size_t setlen);
