@@ -1,5 +1,6 @@
 #include "server.h"
 #include "atomicvar.h"
+#include "memkind_malloc.h"
 
 #include <libpmem.h>
 #include <memkind.h>
